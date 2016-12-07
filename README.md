@@ -5,7 +5,8 @@ This repository facilitates the use of the [TPC-H benchmark](http://www.tpc.org/
 Specifically, the repository comprises:
 
 * A script for automating the tasks of downloading the zipped tabular data (available through [here](http://www.transtats.bts.gov/DL_SelectFields.asp?Table_ID=236&DB_Short_Name=On-Time)), mildly cleaning it, and loading it into a database with a (mostly) proper schema.
-* A set of queries are used as the benchmark, to be executed on all data for years 2000-2008, with correct query result files included as well, as reference.
+* A set of query files, for each of the benchmark's 22 queries - with typical choices for the non-fixed values (e.g. `green` for `[COLOR]` in Q9).
+* A set of expected result files, one for each query.
 * Miscellaneous additional potentially useful scripts and SQL queries\.
 * A copy of `dbgen`, the TPC's data generation utility for TPC-H. It is included in this repository as allowed for in clause 9 of its [End-User License Agreement (EULA)](http://www.tpc.org/tpc_documents_current_versions/source/tpc_eula.txt). It also available without charge from the TPC, [here](http://www.tpc.org/TPC_Documents_Current_Versions/download_programs/tools-download-request.asp?bm_type=TPC-H&bm_vers=2.17.1&mode=CURRENT-ONLY).
 
