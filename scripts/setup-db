@@ -116,10 +116,10 @@ function db_exists {
 
 function run_mclient {
     local language="sql"
-    local query="$1"
+    local queries="$1"
     local format="${2:-csv}"
-    [[ $be_verbose ]] && echo "mclient -lsql -f $format -d $db_name -p $port -s \"\$query\""
-    mclient -lsql -f $format -d $db_name -p $port -s "$query" 
+    [[ $be_verbose ]] && echo "mclient -lsql -f $format -d $db_name -p $port -s \"\$queries\""
+    mclient -lsql -f $format -d $db_name -p $port -s "$queries" 
 }
 
 function dbgen_is_valid {
@@ -256,16 +256,29 @@ if [[ -z "$already_generated" ]]; then
 		if [[ ! -r $dbgen_dists_file ]]; then
 			echo "Cannot read dbgen dists file $dbgen_dists_file" >&2
 			exit -1
-		fi 
+		fi
 		if [[ ! -f $dbgen_binary ]]; then
-			echo "Cannot find the dbgen data generation binary at $dbgen_binary" >&2
+			if [[ ! -f $dbgen_dir/Makefile ]]; then
+				[[ -f $dbgen_dir/makefile.suite ]] || die "Missing makefile.suit in the DBGEN directory $dbgen_dir"
+				# Sorry, we should really make an effort to determine which OS we're running under, rather than assuming
+				# it's Linux-like enough, but - I don't have to code that right now
+				sed 's/^WORKLOAD = /WORKLOAD=TPCH/; s/^MACHINE = /MACHINE=LINUX/; s/DATABASE=/DATABASE=VECTORWISE/;' $dbgen_dir/makefile.suite > $DB_GEN/Makefile
+			fi
+			[[ -f $dbgen_dir/Makefile ]] || die "Could not find or generate a Makefile in $dbgen_dir"
+			make -C $dbgen_dir || die "Failed building the dbgen utility."
+		fi
+				
+		if [[ ! -f $dbgen_binary ]]; then
+			echo "Cannot find the dbgen data generation binary at $dbgen_binary. (Perhaps something went wrong with the build?)" >&2
 			exit -1
 		fi 
 		if [[ ! -x $dbgen_binary ]]; then
-			echo "Cannot execute the dbgen data generation binary at $dbgen_binary" >&2
+			echo "The dbgen data generation binary at $dbgen_binary is not an executable file." >&2
 			exit -1
 		fi 
 fi
+
+
 
 # Note: We don't really need that extra space, but... better be on the safe side (especially if the .tbl directory and the DB farm are on the same partition)
 necessary_space_in_gb=$(( 2 * $scale_factor ))
