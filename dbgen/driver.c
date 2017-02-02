@@ -789,7 +789,7 @@ main (int ac, char **av)
 				else
 					rowcnt = tdefs[i].base;
 				if (verbose > 0)
-					fprintf (stderr, "Generating data for %s", tdefs[i].comment);
+					fprintf (stderr, "Generating data for the %s... ", tdefs[i].comment);
 				gen_tbl ((int)i, minrow, rowcnt, upd_num);
 				if (verbose > 0)
 					fprintf (stderr, "done.\n");
