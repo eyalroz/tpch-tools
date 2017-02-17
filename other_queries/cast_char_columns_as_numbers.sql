@@ -5,21 +5,27 @@
 -- in-memory values as the character sequence as the original,
 -- assuming a little-endian machine - to facilitate compression
 -- (by not having to "deal" with strings).
+--
+-- Note: We're not separating the suffix "casts" with an underscore,
+-- due to naming ambiguity issues in MonetDB, where the SQL catalog
+-- uses "tablename_columnname", so "table_name_column_name" is ambiguous
+-- and can only be disambiguated using another table lookup (e.g. 
+-- the storage table)
 
-CREATE TABLE lineitem_casts (
+CREATE TABLE lineitemcasts (
 l_returnflag    TINYINT       NOT NULL,
 l_linestatus    TINYINT       NOT NULL
 );
 
-INSERT INTO lineitem_casts SELECT
+INSERT INTO lineitemcasts SELECT
 ascii(substr(l_returnflag,   1,1)) AS l_returnflag,
 ascii(substr(l_linestatus, 1,1)) AS l_linestatus
 FROM lineitem;
 
-CREATE TABLE orders_casts (
+CREATE TABLE orderscasts (
 o_orderstatus    TINYINT       NOT NULL
 );
 
-INSERT INTO orders_casts SELECT
+INSERT INTO orderscasts SELECT
 ascii(substr(o_orderstatus,   1,1)) AS o_orderstatus
 FROM orders;

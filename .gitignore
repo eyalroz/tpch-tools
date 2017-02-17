@@ -21,3 +21,5 @@ kernel_tester
 *.bkp
 *.diff
 *.rej
+dbgen/qgen
+dbgen/dbgen
