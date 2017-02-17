@@ -12,7 +12,7 @@ Specifically, the repository comprises:
 
 The repository does _not_ contain:
 
-* The specifications of the TPC-H benchmark. The specs are available [here](http://www.tpc.org/tpc_documents_current_versions/current_specifications.asp), or you can directly downloaded the [PDF](http://www.tpc.org/TPC_Documents_Current_Versions/pdf/TPC-H_v2.17.1.pdf).
+* The specifications of the TPC-H benchmark. The specs are from the [TPC Website](http://www.tpc.org/tpc_documents_current_versions/current_specifications.asp), or you can directly downloaded the [Benchmarks Specs PDF](http://www.tpc.org/TPC_Documents_Current_Versions/pdf/TPC-H_v2.17.1.pdf).
 * Source code or compiled binary for performing the proper TPC-H benchmark, i.e. randomly sending variants of the 22 queries to a server (I would like to have something like that which is FOSS).
 
 Currently, only [MonetDB](https://www.monetdb.org/) is supported as the DBMS into which data is to be loaded - but in the future this may expand.
