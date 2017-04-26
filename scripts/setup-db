@@ -134,7 +134,6 @@ dbgen_dir="./dbgen"
 data_generation_base_dir="$PWD"
 data_generation_dir="${data_generation_base_dir}/tpch-dbgen-${TODAY}"
 #db_name=$(printf 'tpch-sf-%03d' $scale_factor)
-db_name="tpch-sf-$scale_factor"
 log_file="${0}.log"
 keep_raw_tables=
 port=50000
@@ -213,7 +212,7 @@ fi
 
 [[ -n "$db_farm" ]] || db_farm="$DB_FARM"
 [[ -n "$db_farm" ]] || db_farm="$HOME/db_farms/monetdb"
-
+[[ -n "$db_name" ]] || db_name="tpch-sf-$scale_factor"
 #
 #------------------------------
 
@@ -449,8 +448,8 @@ if [[ -z "$already_generated" ]] ; then
 pushd $data_generation_dir >/dev/null
 	
 	[[ "$be_verbose" ]] && dbgen_verbosity_option="-v"
-	[[ "$be_verbose" ]] && echo "$dbgen_binary -v -b $dbgen_dists_file -s 1 "
-	$dbgen_binary -b $dbgen_dists_file -s 1 $dbgen_verbosity_option || die "Failed generating TPC-H data using $dbgen_binary with scale factor $scale_factor, at $data_generation_dir"
+	[[ "$be_verbose" ]] && echo "$dbgen_binary -v -b $dbgen_dists_file -s $scale_factor"
+	$dbgen_binary -b $dbgen_dists_file -s $scale_factor $dbgen_verbosity_option || die "Failed generating TPC-H data using $dbgen_binary with scale factor $scale_factor, at $data_generation_dir"
 	popd >&/dev/null
 else
 	[[ -d $data_generation_dir ]] || die "Pre-generated data directory $data_generation_dir is missing"
