@@ -163,7 +163,7 @@ while [[ $# > 0 ]]; do
 		;;
 	-g|--dbgen-dir)
 		raw_db_dir="$2"
-		dbgen_dir=${raw_db_dir%%+(/)}
+		dbgen_dir=${raw_db_dir%%/}
 		dbgen_binary=$dbgen_dir/dbgen
 		dbgen_dists_file=$dbgen_dir/dists.dss
 		shift # past argument
@@ -357,16 +357,18 @@ EOF
 
 read -r -d '' table_loading_sql_template << EOF
 START TRANSACTION;
-COPY INTO region from 'PWD/region.tbl' USING DELIMITERS '|', '|\n';
-COPY INTO nation from 'PWD/nation.tbl' USING DELIMITERS '|', '|\n';
-COPY INTO supplier from 'PWD/supplier.tbl' USING DELIMITERS '|', '|\n';
-COPY INTO customer from 'PWD/customer.tbl' USING DELIMITERS '|', '|\n';
-COPY INTO part from 'PWD/part.tbl' USING DELIMITERS '|', '|\n';
-COPY INTO partsupp from 'PWD/partsupp.tbl' USING DELIMITERS '|', '|\n';
-COPY INTO orders from 'PWD/orders.tbl' USING DELIMITERS '|', '|\n';
-COPY INTO lineitem from 'PWD/lineitem.tbl' USING DELIMITERS '|', '|\n';
+COPY INTO region    from 'PWD/region.tbl'   USING DELIMITERS '|', '|\n';
+COPY INTO nation    from 'PWD/nation.tbl'   USING DELIMITERS '|', '|\n';
+COPY INTO supplier  from 'PWD/supplier.tbl' USING DELIMITERS '|', '|\n';
+COPY INTO customer  from 'PWD/customer.tbl' USING DELIMITERS '|', '|\n';
+COPY INTO part      from 'PWD/part.tbl'     USING DELIMITERS '|', '|\n';
+COPY INTO partsupp  from 'PWD/partsupp.tbl' USING DELIMITERS '|', '|\n';
+COPY INTO orders    from 'PWD/orders.tbl'   USING DELIMITERS '|', '|\n';
+COPY INTO lineitem  from 'PWD/lineitem.tbl' USING DELIMITERS '|', '|\n';
 COMMIT;
 EOF
+escaped_data_generation_dir=$(echo $data_generation_dir | sed 's/\//\\\//g')
+table_loading_sql=$(echo "$table_loading_sql_template" | sed -e "s/PWD/$escaped_data_generation_dir/")
 
 # Check for binaries
 
@@ -462,8 +464,6 @@ for table_name in region nation supplier customer part partsupp orders lineitem;
 	table_file="$data_generation_dir/${table_name}.tbl"
 	[[ -r $table_file ]] || die "Could not find the generated data file ${table_file} - perhaps its generation failed?"
 done
-escaped_data_generation_dir=$(echo $data_generation_dir | sed 's/\//\\\//g')
-table_loading_sql=$(echo "$table_loading_sql_template" | sed -e "s/PWD/$escaped_data_generation_dir/")
 run_mclient "$table_loading_sql"
 
 [[ -n "$keep_raw_tables" ]] || rm -r $data_generation_dir
