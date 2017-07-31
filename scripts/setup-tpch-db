@@ -245,7 +245,7 @@ if [[ -z "$already_generated" ]]; then
 				[[ -f $dbgen_dir/makefile.suite ]] || die "Missing makefile.suit in the DBGEN directory $dbgen_dir"
 				# Sorry, we should really make an effort to determine which OS we're running under, rather than assuming
 				# it's Linux-like enough, but - I don't have to code that right now
-				sed 's/^WORKLOAD = /WORKLOAD=TPCH/; s/^MACHINE = /MACHINE=LINUX/; s/DATABASE=/DATABASE=VECTORWISE/;' $dbgen_dir/makefile.suite > $DB_GEN/Makefile
+				sed 's/^WORKLOAD = /WORKLOAD=TPCH/; s/^MACHINE = /MACHINE=LINUX/; s/DATABASE=/DATABASE=VECTORWISE/;' $dbgen_dir/makefile.suite > $dbgen_dir/Makefile
 			fi
 			[[ -f $dbgen_dir/Makefile ]] || die "Could not find or generate a Makefile in $dbgen_dir"
 			make -C $dbgen_dir || die "Failed building the dbgen utility."
@@ -461,7 +461,7 @@ fi
 
 # Data generation is complete, time to load it
  
-echo "Loading generated data from $data_generation_dir"
+[[ "$be_verbose" ]] && echo "Loading generated data from $data_generation_dir"
 for table_name in region nation supplier customer part partsupp orders lineitem; do
 	table_file="$data_generation_dir/${table_name}.tbl"
 	[[ -r $table_file ]] || die "Could not find the generated data file ${table_file} - perhaps its generation failed?"
