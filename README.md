@@ -8,12 +8,12 @@ Specifically, the repository comprises:
 * A set of query files, for each of the benchmark's 22 queries - with typical choices for the non-fixed values (e.g. `green` for `[COLOR]` in Q9).
 * A set of expected result files, one for each query.
 * Miscellaneous additional potentially useful scripts and SQL queries\.
-* A copy of `dbgen`, the TPC's data generation utility for TPC-H. It is included in this repository as allowed for in clause 9 of its [End-User License Agreement (EULA)](http://www.tpc.org/tpc_documents_current_versions/source/tpc_eula.txt). It also available without charge from the TPC, [here](http://www.tpc.org/TPC_Documents_Current_Versions/download_programs/tools-download-request.asp?bm_type=TPC-H&bm_vers=2.17.1&mode=CURRENT-ONLY).
+* `dbgen`, the TPC's data generation utility for TPC-H. It is included in this repository as a submodule, linked to [eyalroz/tpch-dbgen](https://github.com/eyalroz/tpch-dbgen/) where it's maintained separately (with several fixes of issues over the TPC's own version). **Note: You have to perform a recursive clone (`git clone --recursive git@github.com:eyalroz/tpch-tools.git`) to also have get the contents of this submodule**.
 
 The repository does _not_ contain:
 
-* The specifications of the TPC-H benchmark. The specs are from the [TPC Website](http://www.tpc.org/tpc_documents_current_versions/current_specifications.asp), or you can directly downloaded the [Benchmarks Specs PDF](http://www.tpc.org/TPC_Documents_Current_Versions/pdf/TPC-H_v2.17.1.pdf).
-* Source code or compiled binary for performing the proper TPC-H benchmark, i.e. randomly sending variants of the 22 queries to a server (I would like to have something like that which is FOSS).
+* The specifications of the TPC-H benchmark. The specs are from the [TPC Website](http://www.tpc.org/tpc_documents_current_versions/current_specifications.asp), or you can directly downloaded the [Benchmarks Specs PDF](http://www.tpc.org/TPC_Documents_Current_Versions/pdf/TPC-H_v2.17.3.pdf).
+* Source code or compiled binaries for actually executing the TPC-H benchmark, i.e. randomly sending variants of the 22 queries to a server. The `qgen` utility, in the `dbgen/` subdirectory, can generate these random queries, but it won't open a connection and throw them at your DBMS using the appropriate 
 
 Currently, only [MonetDB](https://www.monetdb.org/) is supported as the DBMS into which data is to be loaded - but in the future this may expand.
 
@@ -43,7 +43,7 @@ Options:
                               within the DB farm
   -f, --db-farm PATH          Filesystem path for the root directory of the DB farm
                               with the generated DB
-  -p, --platform              Platform for which to try building the data 
+  -p, --platform PLATFORM     Platform for which to try building the data 
                               generation utility (one of ATT DOS HP IBM ICL MVS SGI
                               SUN U2200 VMS LINUX WIN32 MAC)
   -P, --port NUMBER           Network port on the local host, which the server
