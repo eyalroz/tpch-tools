@@ -248,7 +248,7 @@ if [[ -z "$already_generated" ]]; then
 			if [[ -r $dbgen_dir/CMakeLists.txt ]]; then
 				pushd $dbgen_dir
 				type cmake 1>/dev/null || die "CMake build tool unavailable"
-				cmake -DMachine=$platform -DDatabase=VECTORWISE . || die "Failure building the generation utility in $dbgen_dir - CMake failure"
+				cmake -DMACHINE=$platform -DDATABASE=VECTORWISE . || die "Failure building the generation utility in $dbgen_dir - during CMake"
 				popd
 			else
 				if [[ -f $dbgen_dir/makefile.suite ]]; then
