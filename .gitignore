@@ -23,3 +23,4 @@ kernel_tester
 *.rej
 dbgen/qgen
 dbgen/dbgen
+tpch_generated*
