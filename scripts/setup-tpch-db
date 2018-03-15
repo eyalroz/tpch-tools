@@ -462,11 +462,12 @@ else
 fi
 
 # Data generation is complete, time to load it
-[[ "$be_verbose" ]] && echo "Loading generated data from $data_generation_dir"
 for table_name in region nation supplier customer part partsupp orders lineitem; do
 	table_file="$data_generation_dir/${table_name}.tbl"
 	[[ -r $table_file ]] || die "Could not find the generated data file ${table_file} - perhaps its generation failed?"
 done
-run_mclient "$table_loading_sql"
+[[ "$be_verbose" ]] && echo "Loading generated data from $data_generation_dir"
+output_format=$( [[ "$be_verbose" ]] && echo "csv" || echo "trash" )
+run_mclient "$table_loading_sql" $output_format
 
 [[ -n "$keep_raw_tables" ]] || rm -r $data_generation_dir
