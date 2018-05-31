@@ -237,8 +237,12 @@ if [[ -z "$already_generated" ]]; then
 	fi
 	[[ -n $dbgen_dists_file ]] || dbgen_dists_file=$dbgen_dir/dists.dss
 	[[ -n $dbgen_binary ]] || dbgen_binary=$dbgen_dir/dbgen
+	if [[ ! -f $dbgen_dists_file ]]; then
+		echo -e "Cannot find the distributions file $dbgen_dists_file used by the test data generator.\nDid you remember to pull/clone the dbgen submodule? If not, try 'git submodule update --init dbgen/'" >&2
+		exit -1
+	fi
 	if [[ ! -r $dbgen_dists_file ]]; then
-		echo "Cannot read dbgen dists file $dbgen_dists_file" >&2
+		echo "The distributions file $dbgen_dists_file used by the test data generator is not readable." >&2
 		exit -1
 	fi
 	if [[ ! -f $dbgen_binary ]]; then
