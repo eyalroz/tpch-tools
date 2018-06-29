@@ -4,7 +4,7 @@ This repository facilitates the use of the [TPC-H benchmark](http://www.tpc.org/
 
 Specifically, the repository comprises:
 
-* A script for automating the tasks of downloading the zipped tabular data (available through [here](http://www.transtats.bts.gov/DL_SelectFields.asp?Table_ID=236&DB_Short_Name=On-Time)), mildly cleaning it, and loading it into a database with a (mostly) proper schema.
+* A script for automating the tasks of building and running the data generation, creating a MonetDB database with the appropriate  schema and constraints, and loading the generated data into that DB.
 * A set of query files, for each of the benchmark's 22 queries - with typical choices for the non-fixed values (e.g. `green` for `[COLOR]` in Q9).
 * A set of expected result files, one for each query.
 * Miscellaneous additional potentially useful scripts and SQL queries\.
