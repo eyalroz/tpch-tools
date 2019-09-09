@@ -397,7 +397,7 @@ done
 if [[ -z "$already_generated" ]]; then
 	[[ ! -d $data_generation_dir ]] || die "The intended data generation directory $data_generation_dir is already present;\nYou must either remove it, name a subdir, or set -G if it contains the generated data"
 	(( $(gb_available_space_for_dir $data_generation_base_dir) > $necessary_space_in_gb )) ||
-	die "Not enough disk space at $data_generation_base_dir to generate the TPC-H data: We need ${NECCESSARY_SPACE_IN_GB} GiB but have $(gb_available_space_for_dir $data_generation_base_dir) GiB."
+	die "Not enough disk space at $data_generation_base_dir to generate the TPC-H data: We need ${necessary_space_in_gb} GiB but have $(gb_available_space_for_dir $data_generation_base_dir) GiB."
 fi
 
 # Avoid the annoying password prompt if possible...
