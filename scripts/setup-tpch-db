@@ -197,6 +197,10 @@ while [[ $# > 0 ]]; do
 	-D|--data-gen-dir|--data-generation-directory|--data-generation-dir|--gen-dir|--data-gen-directory)
 		raw_data_generation_dir="$2"
 		data_generation_dir="$(readlink -f $raw_data_generation_dir)"
+		data_generation_base_dir=${data_generation_dir}
+		while [ ! -d ${data_generation_base_dir} ]; do
+			data_generation_base_dir=$(dirname ${data_generation_base_dir})
+		done
 		shift # past argument
 		;;
 	-k|--keep-raw-tables|--keep-raw)
