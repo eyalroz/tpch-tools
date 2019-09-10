@@ -67,43 +67,43 @@ function is_positive_int {
 # at reporting the status of things in machine-readable format)
 
 function db_farm_exists {
-    [[ $(monetdbd get all $1 2>/dev/null | wc -l)  -ne 0 ]]
+	[[ $(monetdbd get all $1 2>/dev/null | wc -l)  -ne 0 ]]
 }
 
 function property_of_dbfarm {
-    local property_name="$1"
-    local db_farm="$2"
-    monetdbd get $property_name $db_farm | tail -1 | sed "s/$property_name *//;"
+	local property_name="$1"
+	local db_farm="$2"
+	monetdbd get $property_name $db_farm | tail -1 | sed "s/$property_name *//;"
 }
 
 function db_farm_is_up {
-    db_farm="$1"
-    # When a DB farm is up, the status is "monetdbd[process num here] version here (release name here) is serving this dbfarm";
-    # when it's down, the status is "no monetdbd is serving this dbfarm"
-    [[ $(property_of_dbfarm status $1) =~ "monetdbd[" ]]
+	db_farm="$1"
+	# When a DB farm is up, the status is "monetdbd[process num here] version here (release name here) is serving this dbfarm";
+	# when it's down, the status is "no monetdbd is serving this dbfarm"
+	[[ $(property_of_dbfarm status $1) =~ "monetdbd[" ]]
 }
 
 function db_is_up {
-    # This assumes the DB exists
-    local db_name=$1
-    [[ "$be_verbose" ]] && echo monetdb -p $port status $db_name 2>/dev/null
-    status=$(monetdb -p $port status $db_name 2>/dev/null | tail -1 | sed -r 's/^'$db_name'\s*([^ ]*).*$/\1/;')
-    [[ "$be_verbose" ]] && echo "Database $db_name is" $(echo $status | sed 's/R/running/; s/S/not running/; s/^$/not running/')
-    [[ -n "$status" && $status == "R" ]] && return 0 || return 1
+	# This assumes the DB exists
+	local db_name=$1
+	[[ "$be_verbose" ]] && echo monetdb -p $port status $db_name 2>/dev/null
+	status=$(monetdb -p $port status $db_name 2>/dev/null | tail -1 | sed -r 's/^'$db_name'\s*([^ ]*).*$/\1/;')
+	[[ "$be_verbose" ]] && echo "Database $db_name is" $(echo $status | sed 's/R/running/; s/S/not running/; s/^$/not running/')
+	[[ -n "$status" && $status == "R" ]] && return 0 || return 1
 }
 
 function db_exists {
-    local db_name=$1
-    local port=$2
-    [[ $(monetdb -p $port status $db_name 2>/dev/null | wc -l) > 0 ]]
+	local db_name=$1
+	local port=$2
+	[[ $(monetdb -p $port status $db_name 2>/dev/null | wc -l) > 0 ]]
 }
 
 function run_mclient {
-    local language="sql"
-    local queries="$1"
-    local format="${2:-csv}"
-    [[ $be_verbose ]] && echo "mclient -lsql -f $format -d $db_name -p $port -s \"\$queries\""
-    mclient -lsql -f $format -d $db_name -p $port -s "$queries"
+	local language="sql"
+	local queries="$1"
+	local format="${2:-csv}"
+	[[ $be_verbose ]] && echo "mclient -lsql -f $format -d $db_name -p $port -s \"\$queries\""
+	mclient -lsql -f $format -d $db_name -p $port -s "$queries"
 }
 
 function dbgen_is_valid {
@@ -153,11 +153,11 @@ while [[ $# > 0 ]]; do
 	
 	case $option_key in
 	-v|--verbose)
-	    be_verbose=1
-	    ;;
+		be_verbose=1
+		;;
 	-r|--recreate)
-	    recreate_db=1
-	    ;;
+		recreate_db=1
+		;;
 	-p|--platform|--machine|--os)
 		platform="$2"
 		is_in_list $platform ATT DOS HP IBM ICL MVS SGI SUN U2200 VMS LINUX WIN32 MAC || die "Invalid platform"
@@ -405,34 +405,34 @@ fi
 # Ensure we have a DB farm that's up in which to create the TPC-H DB - or try to create it
 
 if db_farm_exists $db_farm; then
-    port=$(property_of_dbfarm "port" $db_farm)
-    db_farm_is_up $db_farm || monetdbd start $db_farm || die "Could not start the DB farm at $db_farm"
+	port=$(property_of_dbfarm "port" $db_farm)
+	db_farm_is_up $db_farm || monetdbd start $db_farm || die "Could not start the DB farm at $db_farm"
 else
-    [[ -d $db_farm ]] || mkdir -p $db_farm || die "Failed creating a directory for the DB farm at $db_farm"
-    [[ "$be_verbose" ]] && echo "monetdbd create $db_farm"
-    monetdbd create $db_farm || die "A MonetDB database farm does not exist at ${db_farm}, and cannot be created there."
-    [[ "$be_verbose" ]] && echo "monetdbd set port=$port $db_farm"
-    monetdbd set port=$port $db_farm || die "Can't set the daemon port for new DB farm ${db_farm} to ${port}."
-    [[ "$be_verbose" ]] && echo "monetdbd start $db_farm"
-    monetdbd start $db_farm || die
+	[[ -d $db_farm ]] || mkdir -p $db_farm || die "Failed creating a directory for the DB farm at $db_farm"
+	[[ "$be_verbose" ]] && echo "monetdbd create $db_farm"
+	monetdbd create $db_farm || die "A MonetDB database farm does not exist at ${db_farm}, and cannot be created there."
+	[[ "$be_verbose" ]] && echo "monetdbd set port=$port $db_farm"
+	monetdbd set port=$port $db_farm || die "Can't set the daemon port for new DB farm ${db_farm} to ${port}."
+	[[ "$be_verbose" ]] && echo "monetdbd start $db_farm"
+	monetdbd start $db_farm || die
 fi
 
 db_farm_is_up $db_farm || die "Could not get DB farm at $db_farm to the started state"
 
 if db_exists "$db_name" "$port"; then
-    if db_is_up "$db_name" "$port"; then
-        [[ "$be_verbose" ]] &&  echo "monetdb -p $port stop $db_name"
-        monetdb -p $port stop $db_name  >/dev/null || die "Can't stop the existing DB named $db_name in DB farm $db_farm."
-    fi
-    if [[ "$recreate_db" ]]; then
-        [[ "$be_verbose" ]] &&  echo "monetdb -p $port destroy -f $db_name"
-        monetdb -p $port destroy -f $db_name >/dev/null || die "Failed destroying the existing DB named $db_name in DB farm $db_farm."
-        need_to_create_the_db=1
-    else
-        die "A database named $db_name already exists in DB farm ${db_farm}, so giving up. Perhaps you wanted to recreate it?"
-    fi
+	if db_is_up "$db_name" "$port"; then
+		[[ "$be_verbose" ]] &&  echo "monetdb -p $port stop $db_name"
+		monetdb -p $port stop $db_name  >/dev/null || die "Can't stop the existing DB named $db_name in DB farm $db_farm."
+	fi
+	if [[ "$recreate_db" ]]; then
+		[[ "$be_verbose" ]] &&  echo "monetdb -p $port destroy -f $db_name"
+		monetdb -p $port destroy -f $db_name >/dev/null || die "Failed destroying the existing DB named $db_name in DB farm $db_farm."
+		need_to_create_the_db=1
+	else
+		die "A database named $db_name already exists in DB farm ${db_farm}, so giving up. Perhaps you wanted to recreate it?"
+	fi
 else
-    need_to_create_the_db=1
+	need_to_create_the_db=1
 fi
 
 (( $(gb_available_space_for_dir $db_farm) > $necessary_space_in_gb )) ||
@@ -442,12 +442,12 @@ die "Not enough disk space at $db_farm to generate the TPC-H data: We need ${nec
 
 if [[ "$need_to_create_the_db" ]]; then
 	[[ "$be_verbose" ]] && echo "Creating the empty database $db_name in DB farm $db_farm"
-    (
-    ( [[ "$be_verbose" ]] && echo "monetdb -p $port create $db_name" ; monetdb -p $port create $db_name > /dev/null ) &&
-    ( [[ "$be_verbose" ]] && echo "monetdb -p $port release $db_name" ;  monetdb -p $port release $db_name > /dev/null )
-    ) || die "Failed to create (and release) a database named $db_name in DB farm $db_farm"
+	(
+		( [[ "$be_verbose" ]] && echo "monetdb -p $port create $db_name" ; monetdb -p $port create $db_name > /dev/null ) &&
+		( [[ "$be_verbose" ]] && echo "monetdb -p $port release $db_name" ;  monetdb -p $port release $db_name > /dev/null )
+	) || die "Failed to create (and release) a database named $db_name in DB farm $db_farm"
 	[[ "$be_verbose" ]] && echo "Populating the schema of database $db_name"
-    run_mclient "$schema_creation_sql"
+	run_mclient "$schema_creation_sql"
 fi
 
 # Generate the TPC-H data
