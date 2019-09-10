@@ -226,6 +226,7 @@ exec >& >(tee $log_file)
 # Derived non-user-controlled parameters
 
 if [[ -z "$already_generated" ]]; then
+	[[ ! -d "$data_generation_dir" ]] || die "Request to use already-generated data, while the generated data directory is missing: ${data_generation_dir}"
 	if [[ -z $dbgen_binary ]] || [[ -z $dbgen_dists_file ]] ; then
 		if [[ -z $dbgen_dir ]]; then
 			echo "Could not locate the TPC dbgen tool directory/binary & dists file" >&2
@@ -391,13 +392,11 @@ for binary in monetdb monetdbd; do
 	[[ -n `which $binary` ]] || die "Missing MonetDB binary $binary"
 done
 
-[[ -d $db_farm ]] || mkdir -p $db_farm || die "Failed creating a directory for the DB farm at $db_farm"
-
 if [[ -z "$already_generated" ]]; then
 	[[ ! -d $data_generation_dir ]] || die "The intended data generation directory $data_generation_dir is already present.\nYou must either remove it, use a subdirectory within it, or set -G if it contains the generated data"
-	data_generation_base_dir=$(dirname "${data_generation_dir}")
-	(( $(gb_available_space_for_dir $data_generation_base_dir) > $necessary_space_in_gb )) ||
-	die "Not enough disk space at $data_generation_base_dir to generate the TPC-H data: We need ${necessary_space_in_gb} GiB but only have $(gb_available_space_for_dir $data_generation_base_dir) GiB."
+	mkdir -p "$data_generation_dir" || die "Failed creating the generation directory for TPC-H data: ${data_generation_dir}"
+	(( $(gb_available_space_for_dir $data_generation_dir) > $necessary_space_in_gb )) ||
+	die "Not enough disk space on the device holding $data_generation_dir to generate the TPC-H data: We need ${necessary_space_in_gb} GiB but only have $(gb_available_space_for_dir $data_generation_dir) GiB."
 fi
 
 # Avoid the annoying password prompt if possible...
@@ -409,6 +408,7 @@ if db_farm_exists $db_farm; then
     port=$(property_of_dbfarm "port" $db_farm)
     db_farm_is_up $db_farm || monetdbd start $db_farm || die "Could not start the DB farm at $db_farm"
 else
+    [[ -d $db_farm ]] || mkdir -p $db_farm || die "Failed creating a directory for the DB farm at $db_farm"
     [[ "$be_verbose" ]] && echo "monetdbd create $db_farm"
     monetdbd create $db_farm || die "A MonetDB database farm does not exist at ${db_farm}, and cannot be created there."
     [[ "$be_verbose" ]] && echo "monetdbd set port=$port $db_farm"
@@ -453,8 +453,6 @@ fi
 # Generate the TPC-H data
 
 if [[ -z "$already_generated" ]] ; then
-	[[ ! -d $data_generation_dir ]] || die "The intended data generation directory $data_generation_dir is already present; either remove it or set another directory name - picking up after generation is not supported right now."
-	mkdir -p $data_generation_dir || die "Can't create staging directory $data_generation_dir for generating TPC-H data"
 pushd $data_generation_dir >/dev/null
 	
 	[[ "$be_verbose" ]] && dbgen_verbosity_option="-v"
