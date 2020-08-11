@@ -13,7 +13,7 @@ Specifically, the repository comprises:
 The repository does _not_ contain:
 
 * The specifications of the TPC-H benchmark. The specs are from the [TPC Website](http://www.tpc.org/tpc_documents_current_versions/current_specifications.asp), or you can directly downloaded the [Benchmarks Specs PDF](http://www.tpc.org/TPC_Documents_Current_Versions/pdf/TPC-H_v2.17.3.pdf).
-* Source code or compiled binaries for actually executing the TPC-H benchmark, i.e. randomly sending variants of the 22 queries to a server. The `qgen` utility, in the `dbgen/` subdirectory, can generate these random queries, but it won't open a connection and throw them at your DBMS using the appropriate 
+* Source code or compiled binaries for actually executing the TPC-H benchmark, i.e. randomly sending variants of the 22 queries to a server. The `qgen` utility, in the `dbgen/` subdirectory, can generate these random queries, but it won't open a connection and throw them at your DBMS using the appropriate line protocol.
 
 Currently, only [MonetDB](https://www.monetdb.org/) is supported as the DBMS into which data is to be loaded - but in the future this may expand.
 
