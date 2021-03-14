@@ -173,7 +173,7 @@ while [[ $# > 0 ]]; do
 		dbgen_dir=${raw_dbgen_dir%%/}
 		shift # past argument
 		;;
-	-G|--data-already-generated|--already-generated|--have-generated-data|--have-generated)
+	-G|--use-generated|--data-already-generated|--already-generated|--have-generated-data|--have-generated)
 		already_generated=1
 		;;
 	-d|--dbname|--db-name|--database-name)
@@ -225,8 +225,11 @@ exec >& >(tee $log_file)
 
 # Derived non-user-controlled parameters
 
+if [[ -n "$already_generated" ]]; then
+	[[ ! -d "$data_generation_dir" ]] || die "Was requested to use already-generated data, but the directory for it is missing: ${data_generation_dir}"
+fi
+
 if [[ -z "$already_generated" ]]; then
-	[[ ! -d "$data_generation_dir" ]] || die "Request to use already-generated data, while the generated data directory is missing: ${data_generation_dir}"
 	if [[ -z $dbgen_binary ]] || [[ -z $dbgen_dists_file ]] ; then
 		if [[ -z $dbgen_dir ]]; then
 			echo "Could not locate the TPC dbgen tool directory/binary & dists file" >&2
@@ -393,7 +396,8 @@ for binary in monetdb monetdbd; do
 done
 
 if [[ -z "$already_generated" ]]; then
-	[[ ! -d $data_generation_dir ]] || die "The intended data generation directory $data_generation_dir is already present.\nYou must either remove it, use a subdirectory within it, or set -G if it contains the generated data"
+	[[ ! -d $data_generation_dir ]] || die "The intended data generation directory $data_generation_dir is already present.\nYou must either remove it, use a subdirectory within it, or invoke this script with the --use-generated option to use the data in it."
+	[[ -e $data_generation_dir ]] || die "The intended data generation directory $data_generation_dir is already present, but as a non-directory; please remove it or specify a different directory."
 	mkdir -p "$data_generation_dir" || die "Failed creating the generation directory for TPC-H data: ${data_generation_dir}"
 	(( $(gb_available_space_for_dir $data_generation_dir) > $necessary_space_in_gb )) ||
 	die "Not enough disk space on the device holding $data_generation_dir to generate the TPC-H data: We need ${necessary_space_in_gb} GiB but only have $(gb_available_space_for_dir $data_generation_dir) GiB."
