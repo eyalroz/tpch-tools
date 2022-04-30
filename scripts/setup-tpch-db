@@ -397,7 +397,7 @@ done
 
 if [[ -z "$already_generated" ]]; then
 	[[ ! -d $data_generation_dir ]] || die "The intended data generation directory $data_generation_dir is already present.\nYou must either remove it, use a subdirectory within it, or invoke this script with the --use-generated option to use the data in it."
-	[[ -e $data_generation_dir ]] || die "The intended data generation directory $data_generation_dir is already present, but as a non-directory; please remove it or specify a different directory."
+	[[ ! -e $data_generation_dir ]] || die "The intended data generation directory $data_generation_dir is already present, but as a non-directory; please remove it or specify a different directory."
 	mkdir -p "$data_generation_dir" || die "Failed creating the generation directory for TPC-H data: ${data_generation_dir}"
 	(( $(gb_available_space_for_dir $data_generation_dir) > $necessary_space_in_gb )) ||
 	die "Not enough disk space on the device holding $data_generation_dir to generate the TPC-H data: We need ${necessary_space_in_gb} GiB but only have $(gb_available_space_for_dir $data_generation_dir) GiB."
