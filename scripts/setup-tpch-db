@@ -226,7 +226,7 @@ exec >& >(tee $log_file)
 # Derived non-user-controlled parameters
 
 if [[ -n "$already_generated" ]]; then
-	[[ ! -d "$data_generation_dir" ]] || die "Was requested to use already-generated data, but the directory for it is missing: ${data_generation_dir}"
+	[[ -d "$data_generation_dir" ]] || die "Was requested to use already-generated data, but the directory for it is missing: ${data_generation_dir}"
 fi
 
 if [[ -z "$already_generated" ]]; then
